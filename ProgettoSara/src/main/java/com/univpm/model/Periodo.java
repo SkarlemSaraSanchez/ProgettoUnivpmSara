@@ -45,6 +45,11 @@ public class Periodo {
 		}
 		else this.endDate = this.endYear + "-" + this.endMonth + "-" + this.endDay;
 	}
+	
+	public Periodo (String startDate, String endDate) {
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
 			
 	public void setStartDay(int startDay) throws WrongPeriodException {
 		if(startDay<=0 || startDay >31) throw new WrongPeriodException("Giorno non valido!");
