@@ -68,9 +68,10 @@ public class StatsImpl implements I_Stats {
 	/***************************************************************************************************************************/
 	
 	@Override
-	public JSONObject gestoreFiltro(String countryCode, String stateCode, String nameClass, String start, String end)
+	public JSONObject gestoreFiltro(String stateCode, String nameClass, String start, String end)
 			throws ParseException, WrongPeriodException {
 		JSONObject response = new JSONObject();
+		String countryCode = "CA";
 		
 		//COSTRUISCO L'OGGETTO PERIODO
 		Periodo periodo = null;
@@ -105,12 +106,14 @@ public class StatsImpl implements I_Stats {
 	/***************************************************************************************************************************/
 	
 	@SuppressWarnings("unchecked")
-	public JSONObject getStatsAnnuali(String countryCode, String stateCode, String anno) throws ParseException, WrongPeriodException {	
+	@Override
+	public JSONObject getStatsAnnuali(String stateCode, String anno) throws ParseException, WrongPeriodException {	
 		JSONObject response = new JSONObject();
 		JSONObject obj;
 		JSONArray arr = new JSONArray();
 		Anno year = new Anno(anno);
 		HashMap<Integer,Mese> mesi = year.getMesi();
+		String countryCode = "CA";
 		
 		long tot = 0;
 		long min = 0;
@@ -118,17 +121,8 @@ public class StatsImpl implements I_Stats {
 		long max = 0;
 		int indice_max = 0;
 		
+		//MANCA VALIDAZIONE ANNO
 		response.put("Anno", anno);
-		
-		//VALIDAZIONE PARAMETRO COUNTRYCODE
-		boolean valCountryCode = this.validazione("countryCode", countryCode);
-		if(!valCountryCode) {
-			obj = new JSONObject();
-			obj.put("Country", countryCode);
-			obj.put("Errore", "countryCode non valido");
-			response = obj;
-			return response;
-		}
 		response.put("Country", countryCode);
 		
 		//VALIDAZIONE PARAMETRO STATECODE
@@ -603,6 +597,8 @@ public class StatsImpl implements I_Stats {
 		JSONArray objs = new JSONArray();
 		JSONObject response = new JSONObject();
 		long num = 0;
+		
+		//VALORI DEGLI STATI E DELLE CLASSIFICAZIONI
 		String[] states = stateCode.split("-");
 		String[] classific = nameClass.split("-");
 		
@@ -616,10 +612,7 @@ public class StatsImpl implements I_Stats {
 		//VALIDAZIONE PARAMETRO COUNTRYCODE
 		boolean valCountryCode = this.validazione("countryCode", countryCode);
 		if(!valCountryCode) {
-			obj.put("Country", countryCode);
-			obj.put("Errore", "countryCode non valido");
-			response = obj;
-			return response;
+			return this.getErrori("countryCode", countryCode);
 		}
 		
 		//AGGIUNGO IL DATO COUNTRY
@@ -633,16 +626,10 @@ public class StatsImpl implements I_Stats {
 			boolean valClass = this.validazione("segmentName", nameClass);
 			//SE UNO DEI PARAMETRI NON E' VALIDO MANDO UN ECCEZIONE
 			if (!valStateCode) {
-				obj.put("State", stateCode);
-				obj.put("Errore", "Stato non valido");
-				response = obj;
-				return response;
+				return this.getErrori("stateCode", stateCode);
 			}
 			if (!valClass) {
-				obj.put("Classification", nameClass);
-				obj.put("Errore", "nameClass non valido");
-				response = obj;
-				return response;
+				return this.getErrori("nameClass", nameClass);
 			}
 			
 			//ALTRIMENTI CONTINUO
@@ -663,10 +650,7 @@ public class StatsImpl implements I_Stats {
 			//VALIDAZIONE DEI PARAMETRI CHE L'UTENTE IMMETTE
 			boolean valStateCode = this.validazione("stateCode", stateCode);
 			if(!valStateCode) {
-				obj.put("State", stateCode);
-				obj.put("Errore", "Stato non valido");
-				response = obj;
-				return response;
+				return this.getErrori("stateCode", stateCode);
 			}
 			obj.put("State", stateCode);
 			for (int i=0; i<classific.length; i++) {
@@ -851,5 +835,14 @@ public class StatsImpl implements I_Stats {
 		long num = this.numEventi(obj);
 		if (num != 0) return true;
 		else return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject getErrori(String parametro, String valore) {
+		JSONObject errore = new JSONObject();
+		errore.put(parametro, valore);
+		errore.put("Errore", "Statistiche non disponibili");
+		errore.put("Messaggio", "Pattern di chiamata compromesso");
+		return errore;
 	}
 }
