@@ -12,8 +12,8 @@ public class EndPoint {
 	
 	String domain;
 	String i_path;
-	String QueryString; 
-	String addQueryString;
+	String QueryString = ""; 
+	String addQueryString = "";
 	int indiceDiChiamta;
 	
 	public EndPoint(String url) {
