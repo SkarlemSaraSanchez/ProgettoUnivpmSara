@@ -236,6 +236,7 @@ public class StatsImpl implements I_Stats {
 			JSONObject dato = setupModel(countryCode,stateCode);
 			long num = this.numEventi(dato);
 			obj.put("Numero Eventi", num);
+			obj.put("Nota", "Statistiche non disponibili");
 			response = obj;
 		}
 		
@@ -246,9 +247,8 @@ public class StatsImpl implements I_Stats {
 				//VALIDAZIONE STATE
 				boolean valStateCode = this.validazione("stateCode", states[i]);
 				if (!valStateCode) {
-					singolo.put("State", states[i]);
-					singolo.put("Errore", "stateCode non valido");
-					singolo.put("Messaggio", "Pattern di chiamata compromesso");
+					JSONObject errore = this.getErrori("State", states[i]);
+					singolo = errore;
 				}
 				else {
 					JSONObject dato = setupModel(countryCode,states[i]);
@@ -352,6 +352,7 @@ public class StatsImpl implements I_Stats {
 			obj.put("State", stateCode);
 			obj.put("Classification", nameClass);
 			obj.put("NUM", num);
+			obj.put("Nota", "Statistiche non disponibili");
 			response = obj;
 		}
 		
